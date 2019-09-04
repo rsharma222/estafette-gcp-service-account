@@ -1,0 +1,24 @@
+secret:
+  serviceAccount: "google-sa-json"
+mode: "rotate_keys_only"
+saProjectId: "trvx-service-account-container"
+keyRotHrs: 360
+purgeKeysAfterHrs: 720
+disableKeyRotOverride: "true" 
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 100m
+    memory: 350Mi
+affinity: 
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 10
+      preference:
+        matchExpressions:
+        - key: cloud.google.com/gke-preemptible
+          operator: In
+          values:
+          - "true"

@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: "1.1.7"
+description: Estafette GCP Service Account Controller
+name: estafette-gcp-service-account
+version: 0.1.0
+source:
+- https://github.com/estafette/estafette-gcp-service-account.git
+maintainers:
+  - name: Estafette

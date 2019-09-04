@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{.Chart.Name | quote}}
+  namespace: {{.Release.Namespace | quote}}
+  labels:
+{{ include "commonLabels" . | indent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{.Chart.Name | quote}}
+  template:
+    metadata:
+      labels:
+{{ include "completeLabels" . | indent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9101"
+    spec:
+      serviceAccount: {{.Chart.Name | quote}}
+      terminationGracePeriodSeconds: 120
+      {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name | quote }}
+        image: estafette/estafette-letsencrypt-certificate:{{.Chart.AppVersion}}
+        imagePullPolicy: Always
+        env:
+        - name: "GOOGLE_APPLICATION_CREDENTIALS"
+          value: {{ .Values.secret.serviceAccount | quote }}
+        - name: "MODE"
+          value: {{ .Values.mode | quote }}
+        - name: "SERVICE_ACCOUNT_PROJECT_ID"
+          value: {{ .Values.saProjectId }}
+        - name: "KEY_ROTATION_AFTER_HOURS"
+          value: {{ .Values.keyRotHrs }}
+        - name: PURGE_KEYS_AFTER_HOURS
+          value: {{ .Values.purgeKeysAfterHrs}}
+        - name: ALLOW_DISABLE_KEY_ROTATION_OVERRIDE
+          value: {{ .Values.disableKeyRotOverride | quote }} 
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu | quote }}
+            memory: {{ .Values.resources.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu | quote }}
+            memory: {{ .Values.resources.limits.memory | quote }}
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9101
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: estafette-gcp-service-account-secrets
+          mountPath: /secrets
+      volumes:
+      - name: estafette-gcp-service-account-secrets
+        secret:
+          secretName: {{.Chart.Name}}-secrets
