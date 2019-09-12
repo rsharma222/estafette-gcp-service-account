@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  estafette-gcp-service-account:
+  - apiVersion: v1
+    appVersion: 1.1.7
+    created: 2019-09-12T15:37:50.475807+02:00
+    description: Estafette GCP Service Account Controller
+    digest: 295d9e43a66654846b01dba2cf505d7e55e1543acdb398b937513f1d2e8a03fd
+    maintainers:
+    - name: Estafette
+    name: estafette-gcp-service-account
+    urls:
+    - https://rsharma222.github.io/estafette-gcp-service-account/estafette-gcp-service-account-0.1.0.tgz
+    version: 0.1.0
+generated: 2019-09-12T15:37:50.475332+02:00
